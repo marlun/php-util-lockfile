@@ -22,17 +22,17 @@ class LockFile {
 		}
 
 		// If this is the first execution of the script we create the lock file
-		// and add 1 to it.
+		// and add 1 to it. If it exist we read in the current count.
 		if (!file_exists($path)) {
 			$created = touch($path);
 			if (!$created) {
 				throw new \Exception("Couldn't create lock file");
 			}
+			$count = 0;
+		} else {
+			$count = file_get_contents($path);
 		}
 
-		// Read in the current count from the lock file. If the file was just
-		// created it will return an empty string so we use 0 instead.
-		$count = file_get_contents($path) ?: 0;
 		if (!is_numeric($count)) {
 			throw new \UnexpectedValueException('Lock file count is not numeric');
 		}
